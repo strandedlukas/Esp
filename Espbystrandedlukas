@@ -1,0 +1,76 @@
+-- Function to create a neon ESP BillboardGui, a blue box around the player, a name tag label, and a tracer line
+local function createESP(player)
+    -- Create neon ESP BillboardGui
+    local espGui = Instance.new("BillboardGui")
+    espGui.Size = UDim2.new(2, 0, 2, 0) -- Adjusted size to cover the entire player's character
+    espGui.AlwaysOnTop = true
+    espGui.StudsOffset = Vector3.new(0, 1, 0) -- Adjust the offset to position the ESP above the player
+    espGui.Parent = player.Character.Head
+
+    local espFrame = Instance.new("Frame")
+    espFrame.Size = UDim2.new(1, 0, 1, 0)
+    espFrame.BackgroundTransparency = 0
+    espFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 255) -- Blue color
+    espFrame.BorderSizePixel = 0
+    espFrame.Parent = espGui
+
+    local espGlow = Instance.new("BlurEffect")
+    espGlow.Size = 10
+    espGlow.Parent = espFrame
+
+    -- Create blue box around the player
+    local espBox = Instance.new("BoxHandleAdornment")
+    espBox.Size = player.Character:GetExtentsSize()
+    espBox.Adornee = player.Character
+    espBox.AlwaysOnTop = true
+    espBox.ZIndex = 5
+    espBox.Transparency = 0.5
+    espBox.Color3 = Color3.fromRGB(0, 0, 255) -- Blue color
+    espBox.Parent = player.Character
+
+    -- Create name tag label
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Size = UDim2.new(3, 0, 0, 20)
+    nameLabel.Position = UDim2.new(-1, 0, -1, 0) -- Position above the player's head
+    nameLabel.Text = player.Name
+    nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Font = Enum.Font.SourceSansBold
+    nameLabel.TextSize = 18
+    nameLabel.Parent = espGui
+
+    -- Create tracer line
+    local tracerGui = Instance.new("BillboardGui")
+    tracerGui.Size = UDim2.new(0, 1, 0, 1)
+    tracerGui.StudsOffset = Vector3.new(0, 0, 0) -- Adjusted to the player's head position
+    tracerGui.Parent = player.Character.Head
+
+    local tracerLine = Instance.new("LineHandleAdornment")
+    tracerLine.ZIndex = 1
+    tracerLine.Color3 = Color3.fromRGB(255, 255, 255) -- White color
+    tracerLine.Thickness = 1
+    tracerLine.Transparency = 0.5
+    tracerLine.Adornee = player.Character.Head
+    tracerLine.Parent = tracerGui
+    
+    -- Find position of the blue box
+    local boxPosition = espBox.Position
+    local playerHead = player.Character.Head
+    local targetPosition = playerHead.CFrame:PointToWorldSpace(boxPosition)
+    
+    -- Set the To property of the tracer line to the position of the blue box
+    tracerLine.To = targetPosition
+end
+
+-- Function to highlight all players in the game
+local function highlightPlayers()
+    local localPlayer = game.Players.LocalPlayer
+    for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
+        if player ~= localPlayer and player.Character and player.Character:FindFirstChild("Head") then
+            createESP(player)
+        end
+    end
+end
+
+-- Highlight players when the script is executed
+highlightPlayers()
